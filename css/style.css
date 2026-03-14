@@ -432,6 +432,33 @@ body {
   color: var(--text-secondary);
 }
 
+.ocr-debug {
+  margin-top: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.ocr-debug summary {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ocr-debug pre {
+  padding: 8px 12px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .new-receipt-form h3 {
   font-size: 16px;
   font-weight: 600;

@@ -403,6 +403,15 @@ const UI = {
         });
       }
 
+      // Show raw OCR debug output
+      let debugEl = document.getElementById('ocr-debug');
+      if (!debugEl) {
+        document.getElementById('ocr-status').insertAdjacentHTML('afterend',
+          '<details id="ocr-debug" class="ocr-debug"><summary>Raw OCR Text</summary><pre id="ocr-debug-text"></pre></details>');
+        debugEl = document.getElementById('ocr-debug');
+      }
+      document.getElementById('ocr-debug-text').textContent = text;
+
       // Hide progress after a moment
       setTimeout(() => { statusEl.style.display = 'none'; }, 800);
     } catch (e) {
