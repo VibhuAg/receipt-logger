@@ -255,6 +255,8 @@ const UI = {
       ? parsed.items.map((item, i) => this._newReceiptItemRow(i, item)).join('')
       : this._newReceiptItemRow(0, { receiptName: '', price: '' });
 
+    const dateValue = parsed.date || new Date().toISOString().split('T')[0];
+
     this.root.innerHTML = `
       <div class="view">
         <div class="nav-bar">
@@ -277,7 +279,7 @@ const UI = {
             </div>
             <div class="field-group">
               <label>Date</label>
-              <input type="date" id="new-date" value="${new Date().toISOString().split('T')[0]}">
+              <input type="date" id="new-date" value="${dateValue}">
             </div>
           </div>
 
