@@ -5,15 +5,6 @@ const App = {
   currentView: null,
 
   async init() {
-    // Check for OCR text in URL params
-    const params = new URLSearchParams(window.location.search);
-    const ocrText = params.get('text');
-
-    if (ocrText) {
-      // Clear the URL param so refreshing doesn't re-trigger
-      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
-    }
-
     if (!Storage.isConfigured()) {
       UI.renderSetup();
       return;
@@ -25,12 +16,6 @@ const App = {
     } catch (e) {
       UI.showError('Failed to load data: ' + e.message);
       return;
-    }
-
-    if (ocrText) {
-      window.location.hash = '#/new';
-      // Store OCR text temporarily so the new receipt view can use it
-      this._pendingOCRText = ocrText;
     }
 
     this.setupRouting();
@@ -80,7 +65,6 @@ const App = {
       window.location.hash = '#/';
       return;
     }
-    // Sort receipts by date descending
     const sorted = [...store.receipts].sort((a, b) => b.date.localeCompare(a.date));
     UI.renderStoreDetail(store, sorted);
   },
@@ -94,10 +78,10 @@ const App = {
   },
 
   showNewReceipt() {
-    let parsed = { storeName: '', items: [] };
-    if (this._pendingOCRText) {
-      parsed = Parser.parse(this._pendingOCRText);
-      this._pendingOCRText = null;
+    let parsed = { storeName: '', items: [], date: '' };
+    if (this._pendingParsed) {
+      parsed = this._pendingParsed;
+      this._pendingParsed = null;
     }
     const existingStores = this.data.stores.map(s => s.name);
     UI.renderNewReceipt(parsed, existingStores);
@@ -105,6 +89,17 @@ const App = {
 
   showSearch() {
     UI.renderSearch(this.data);
+  },
+
+  // --- OCR ---
+
+  async ocrFromImage(imageFile) {
+    const worker = await Tesseract.createWorker('eng');
+    // PSM 4 = single column of text (receipt layout)
+    await worker.setParameters({ tessedit_pageseg_mode: '4' });
+    const { data } = await worker.recognize(imageFile);
+    await worker.terminate();
+    return data.text;
   },
 
   // --- Data mutations ---
@@ -197,7 +192,6 @@ const App = {
     const store = this.data.stores.find(s => s.id === storeId);
     if (!store) return;
     store.receipts = store.receipts.filter(r => r.id !== receiptId);
-    // If store has no receipts, remove the store too
     if (store.receipts.length === 0) {
       this.data.stores = this.data.stores.filter(s => s.id !== storeId);
       await Storage.saveData(this.data);

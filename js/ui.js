@@ -251,7 +251,8 @@ const UI = {
     // Build autocomplete datalist
     const storeOptions = existingStores.map(s => `<option value="${this._esc(s)}">`).join('');
 
-    const itemRows = parsed.items.length > 0
+    const hasItems = parsed.items.length > 0;
+    const itemRows = hasItems
       ? parsed.items.map((item, i) => this._newReceiptItemRow(i, item)).join('')
       : this._newReceiptItemRow(0, { receiptName: '', price: '' });
 
@@ -271,6 +272,17 @@ const UI = {
         </div>
 
         <div class="new-receipt-form">
+          <div class="scan-section">
+            <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none">
+            <input type="file" id="gallery-input" accept="image/*" style="display:none">
+            <button class="btn-primary scan-btn" id="camera-btn">Take Photo of Receipt</button>
+            <button class="btn-secondary" id="gallery-btn">Choose from Photo Library</button>
+            <div id="ocr-status" class="ocr-status" style="display:none">
+              <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocr-progress"></div></div>
+              <span id="ocr-status-text">Recognizing text...</span>
+            </div>
+          </div>
+
           <div class="form-section">
             <div class="field-group">
               <label>Store Name</label>
@@ -283,10 +295,6 @@ const UI = {
             </div>
           </div>
 
-          <div class="paste-section">
-            <button class="btn-secondary" id="paste-btn">📋 Paste OCR Text from Clipboard</button>
-          </div>
-
           <h3>Items</h3>
           <div id="new-items">${itemRows}</div>
           <button class="btn-secondary" id="add-row-btn">+ Add Item</button>
@@ -296,37 +304,29 @@ const UI = {
       </div>
     `;
 
-    this._newItemCounter = Math.max(parsed.items.length, 1);
+    this._newItemCounter = hasItems ? parsed.items.length : 1;
+
+    // Camera capture
+    document.getElementById('camera-btn').addEventListener('click', () => {
+      document.getElementById('camera-input').click();
+    });
+
+    document.getElementById('gallery-btn').addEventListener('click', () => {
+      document.getElementById('gallery-input').click();
+    });
+
+    const handleImage = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      this._runOCR(file, existingStores);
+    };
+
+    document.getElementById('camera-input').addEventListener('change', handleImage);
+    document.getElementById('gallery-input').addEventListener('change', handleImage);
 
     document.getElementById('add-row-btn').addEventListener('click', () => {
       const container = document.getElementById('new-items');
       container.insertAdjacentHTML('beforeend', this._newReceiptItemRow(this._newItemCounter++, { receiptName: '', price: '' }));
-    });
-
-    document.getElementById('paste-btn').addEventListener('click', async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (!text) { alert('Clipboard is empty'); return; }
-        const parsed = Parser.parse(text);
-
-        // Fill in store name if empty
-        const storeInput = document.getElementById('new-store');
-        if (!storeInput.value && parsed.storeName) {
-          storeInput.value = parsed.storeName;
-        }
-
-        // Add parsed items
-        if (parsed.items.length > 0) {
-          const container = document.getElementById('new-items');
-          container.innerHTML = '';
-          this._newItemCounter = 0;
-          parsed.items.forEach(item => {
-            container.insertAdjacentHTML('beforeend', this._newReceiptItemRow(this._newItemCounter++, item));
-          });
-        }
-      } catch (e) {
-        alert('Could not read clipboard. Make sure you\'ve granted clipboard permission.');
-      }
     });
 
     document.getElementById('save-receipt-btn').addEventListener('click', () => {
@@ -354,6 +354,65 @@ const UI = {
 
       App.saveReceipt(storeName, date, items);
     });
+  },
+
+  async _runOCR(imageFile, existingStores) {
+    const statusEl = document.getElementById('ocr-status');
+    const progressEl = document.getElementById('ocr-progress');
+    const statusTextEl = document.getElementById('ocr-status-text');
+    const cameraBtn = document.getElementById('camera-btn');
+    const galleryBtn = document.getElementById('gallery-btn');
+
+    // Show progress
+    statusEl.style.display = 'block';
+    cameraBtn.disabled = true;
+    galleryBtn.disabled = true;
+    progressEl.style.width = '10%';
+    statusTextEl.textContent = 'Loading OCR engine...';
+
+    try {
+      progressEl.style.width = '30%';
+      statusTextEl.textContent = 'Recognizing text...';
+
+      const text = await App.ocrFromImage(imageFile);
+
+      progressEl.style.width = '90%';
+      statusTextEl.textContent = 'Parsing receipt...';
+
+      const parsed = Parser.parse(text);
+
+      progressEl.style.width = '100%';
+      statusTextEl.textContent = 'Done!';
+
+      // Fill in the form with parsed results
+      const storeInput = document.getElementById('new-store');
+      if (!storeInput.value && parsed.storeName) {
+        storeInput.value = parsed.storeName;
+      }
+
+      if (parsed.date) {
+        document.getElementById('new-date').value = parsed.date;
+      }
+
+      if (parsed.items.length > 0) {
+        const container = document.getElementById('new-items');
+        container.innerHTML = '';
+        this._newItemCounter = 0;
+        parsed.items.forEach(item => {
+          container.insertAdjacentHTML('beforeend', this._newReceiptItemRow(this._newItemCounter++, item));
+        });
+      }
+
+      // Hide progress after a moment
+      setTimeout(() => { statusEl.style.display = 'none'; }, 800);
+    } catch (e) {
+      statusTextEl.textContent = 'OCR failed: ' + e.message;
+      progressEl.style.width = '100%';
+      progressEl.style.background = 'var(--danger)';
+    } finally {
+      cameraBtn.disabled = false;
+      galleryBtn.disabled = false;
+    }
   },
 
   _newReceiptItemRow(index, item) {

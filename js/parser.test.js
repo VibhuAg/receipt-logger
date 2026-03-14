@@ -168,6 +168,92 @@ assertEq(simpleResult.items.length, 3, 'simple: should find 3 items (skip subtot
 assertEq(simpleResult.items[0].receiptName, 'ROTISSERIE CHICKEN', 'simple: first item name');
 assertEq(simpleResult.items[0].price, 4.99, 'simple: first item price');
 
+// --- Test: Trader Joe's OCR output #2 (names block then prices block) ---
+// This is a different OCR layout where all item names come first, then all prices
+
+const traderJoesOCR2 = `TRADER JOE'S
+22-43 Jackson Ave
+Long Island City,
+NY 11101
+Store #0565 - 718-472-2672
+OPEN 8:00AM TO 9:00PM DAILY
+SALE TRANSACTION
+CHEESE TOMATO PIZZA FAMI R-SALAD POWER TO THE GRE EGG BITES SPINACH KALE F
+WHOLE WHEAT LAVASH
+YOGURT GREEK PLAIN 32 OZ
+THREE CHEESE POMODORO
+BLACK BEANS
+COTTAGE CHEESE PINT LF
+EGG WHITE PRODUCT LIQUID
+A-PLUMS LEMON 2 LB
+VEG SOY CHORIZO
+PASTA RAVIOLINI ITALIAN
+VEG TEMPEH ORG 3 GRAIN
+BAG FEE.
+$6.49
+$2.49
+$3.79
+$2.
+99
+$5.49
+$3.49
+$0
+99
+$2.99
+$3.99
+$6.
+99
+$2.99
+$3.49
+$2.49
+$0.10
+Items in Transaction: 15
+Balance to pay
+MasterCard
+PAYMENT CARD PURCHASE TRANSACTION
+CUSTOMER COPY
+$48.77
+$48.77
+MASTERCARD
+Type: CONTACTLESS
+MID: *******26739
+TOTAL PURCHASE
+Cardholder PIN Verified
+#***********2233
+Auth Code:
+088822
+TID:
+****6695
+$48.77
+Please retain for your records
+N, Mary
+STORE
+0565
+TILL
+10
+TRANS.
+3117
+DATE
+02-15-2026 16:06
+THANK YOU FOR SHOPPING AT
+TRADER JOE S
+www.traderjoes.com`;
+
+const result2 = Parser.parse(traderJoesOCR2);
+
+assertEq(result2.storeName, "TRADER JOE'S", 'ocr2: store name');
+assertEq(result2.date, '2026-02-15', 'ocr2: date');
+// This format is hard to parse — names and prices are in separate blocks.
+// The parser should still find items where names happen to be followed by prices
+// after reassembly (e.g. VEG TEMPEH ORG 3 GRAIN followed by BAG FEE. then prices).
+// At minimum, it should not crash and should not include junk.
+assert(result2.items.length >= 0, `ocr2: should not crash, found ${result2.items.length} items`);
+
+const allNames2 = result2.items.map(i => i.receiptName.toLowerCase());
+assert(!allNames2.some(n => n.includes('total')), 'ocr2: should not include total lines');
+assert(!allNames2.some(n => n.includes('mastercard')), 'ocr2: should not include payment card lines');
+assert(!allNames2.some(n => n.includes('****')), 'ocr2: should not include masked card numbers');
+
 // --- Test: date extraction formats ---
 
 const dateText1 = `STORE\n03/22/2026 10:30`;

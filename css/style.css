@@ -396,8 +396,40 @@ body {
   box-shadow: var(--shadow);
 }
 
-.paste-section {
+/* Scan / OCR */
+
+.scan-section {
   margin-bottom: 16px;
+}
+
+.scan-btn {
+  margin-top: 0;
+}
+
+.ocr-status {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.ocr-progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.ocr-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.ocr-status span {
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .new-receipt-form h3 {
