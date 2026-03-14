@@ -1,0 +1,472 @@
+/* Receipt Logger - Mobile-first styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --text: #1d1d1f;
+  --text-secondary: #86868b;
+  --accent: #007aff;
+  --danger: #ff3b30;
+  --border: #e5e5e7;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 100dvh;
+}
+
+#app {
+  min-height: 100dvh;
+}
+
+/* Loading & errors */
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--text-secondary);
+  font-size: 18px;
+}
+
+.error-msg {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--danger);
+}
+
+.error-msg button {
+  margin-top: 16px;
+  padding: 8px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* Navigation bar */
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-bar h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--text-secondary);
+}
+
+.editable-title {
+  cursor: pointer;
+}
+
+/* Tab bar */
+
+.tab-bar {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Lists */
+
+.list {
+  padding: 8px 0;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.list-item:active {
+  background: var(--bg);
+}
+
+.list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-item-title {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-item-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.list-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chevron {
+  color: var(--text-secondary);
+  font-size: 20px;
+  margin-left: 8px;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Buttons */
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.btn-primary:active {
+  opacity: 0.8;
+}
+
+.btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.btn-danger {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 20px 16px;
+  padding: 12px;
+  background: none;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.6;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
+
+.delete-store-btn {
+  margin-top: 32px;
+}
+
+/* Forms */
+
+.field-group {
+  margin-bottom: 12px;
+}
+
+.field-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.field-group input,
+.field-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.field-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Setup */
+
+.setup-view {
+  padding: 60px 24px 24px;
+}
+
+.setup-view h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.setup-view > p {
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.setup-section {
+  margin-bottom: 24px;
+}
+
+.setup-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.setup-section input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* Settings */
+
+.settings-content {
+  padding: 16px;
+}
+
+.setting-row {
+  padding: 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+
+.setting-row label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.setting-row code {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+/* Receipt detail */
+
+.receipt-meta {
+  padding: 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.receipt-total {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.receipt-items {
+  padding: 0 16px;
+}
+
+.receipt-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.receipt-item-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.add-item-btn {
+  margin: 12px 16px 0;
+  width: calc(100% - 32px);
+}
+
+/* New receipt */
+
+.new-receipt-form {
+  padding: 16px;
+}
+
+.form-section {
+  background: var(--surface);
+  padding: 16px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.paste-section {
+  margin-bottom: 16px;
+}
+
+.new-receipt-form h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.new-item-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.new-item-name {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.new-item-price {
+  width: 90px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: right;
+}
+
+.save-btn {
+  margin-top: 24px;
+}
+
+/* Search */
+
+.search-bar {
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 16px;
+  background: var(--bg);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.receipt-name-tag {
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Safe areas for iOS */
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .nav-bar {
+    padding-top: calc(12px + env(safe-area-inset-top));
+  }
+}
